@@ -2,8 +2,8 @@
 Sistema de Cifragem, Sanitização e Logs de Segurança em C - AV1 CÉSAR School
 
 ## Integrantes do Grupo
-* Luiz Carlos Barbosa Neto
-* 
+* Luiz Carlos
+* Vinicius Brito
 ---
 ## Resumo do Projeto
 
