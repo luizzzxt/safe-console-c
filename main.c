@@ -59,6 +59,19 @@ int main() {
     } else {
         printf("Status: SENHA FRACA!\n");
     }
+    // Teste da Cifra de Cesar (Etapa 2)
+    printf("Digite um texto para cifrar (Cesar): ");
+    ler_string(texto, TAM_BUFFER);
+    printf("Digite o deslocamento: ");
+    scanf("%d", &deslocamento);
+    
+    cifrar_cesar(texto, deslocamento);
+    printf("Texto Cifrado: %s\n", texto);
+    
+    return 0;
+}
+
+    
     
     return 0;
 }
