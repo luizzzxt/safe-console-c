@@ -42,37 +42,66 @@ int validar_senha(char senha[]) {
 
     return tem_maiuscula && tem_minuscula && tem_digito;
 }
+// ETAPA 2: CIFRAS DE SEGURANÇA
 
-int main() {
+   // 4. Cifra de Cesar
+void cifrar_cesar(char texto[], int deslocamento) {
+    for (int i = 0; texto[i] != '\0'; i++) {
+        if (isalpha(texto[i])) {
+            char base = isupper(texto[i]) ? 'A' : 'a';
+            texto[i] = (texto[i] - base + deslocamento) % 26 + base;
+        }
+    }
+}
+// 5. Cifra XOR (Simetrica)
+void cifrar_xor(char texto[], char chave) {
+    for (int i = 0; texto[i] != '\0'; i++) {
+        texto[i] = texto[i] ^ chave;
+        printf("Status: SENHA FRACA!\n");
+    }
+}
+    
+ int main() {
     char dado[TAM_BUFFER];
     char senha[TAM_BUFFER];
-    
+    char texto[TAM_BUFFER];
+    int deslocamento;
+    char chave_xor = 'K';
+
+    // --- TESTES DA ETAPA 1 ---
     printf("Digite um CPF/Cartao: ");
     ler_string(dado, TAM_BUFFER);
     mascarar_dados(dado);
     printf("Dado mascarado: %s\n\n", dado);
-    
+
     printf("Digite uma senha para validar: ");
     ler_string(senha, TAM_BUFFER);
     if (validar_senha(senha)) {
-        printf("Status: SENHA FORTE!\n");
+        printf("Status: SENHA FORTE!\n\n");
     } else {
-        printf("Status: SENHA FRACA!\n");
+        printf("Status: SENHA FRACA!\n\n");
     }
-    // Teste da Cifra de Cesar (Etapa 2)
+
+    // --- TESTES DA ETAPA 2 ---
+    // Cifra de Cesar
     printf("Digite um texto para cifrar (Cesar): ");
     ler_string(texto, TAM_BUFFER);
     printf("Digite o deslocamento: ");
     scanf("%d", &deslocamento);
-    
+    getchar(); // Limpa o '\n' pendente do scanf na memoria
+
     cifrar_cesar(texto, deslocamento);
-    printf("Texto Cifrado: %s\n", texto);
-    
+    printf("Texto Cifrado (Cesar): %s\n\n", texto);
+
+    // Cifra XOR
+    printf("Digite um texto para cifrar (XOR): ");
+    ler_string(texto, TAM_BUFFER);
+
+    cifrar_xor(texto, chave_xor);
+    printf("Texto Cifrado (XOR): %s\n", texto);
+
+    cifrar_xor(texto, chave_xor); // Aplica novamente para decifrar
+    printf("Texto Decifrado (XOR): %s\n", texto);
+
     return 0;
 }
-
-    
-    
-    return 0;
-}
-
