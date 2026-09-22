@@ -14,6 +14,7 @@ void ler_string(char buffer[], int tamanho) {
         }
     }
 }
+
 // Funcao auxiliar para limpar o buffer do stdin apos o scanf
 void limpar_buffer(void) {
     int c;
@@ -30,6 +31,7 @@ void mascarar_dados(char dado[]) {
         dado[i] = '*';
     }
 }
+
 // 3. Validacao de complexidade de senha
 int validar_senha(char senha[]) {
     int tamanho = strlen(senha);
@@ -40,73 +42,110 @@ int validar_senha(char senha[]) {
     int tem_digito = 0;
 
     for (int i = 0; i < tamanho; i++) {
-        if (isupper(senha[i])) tem_maiuscula = 1;
-        else if (islower(senha[i])) tem_minuscula = 1;
-        else if (isdigit(senha[i])) tem_digito = 1;
+        if (isupper((unsigned char)senha[i])) tem_maiuscula = 1;
+        else if (islower((unsigned char)senha[i])) tem_minuscula = 1;
+        else if (isdigit((unsigned char)senha[i])) tem_digito = 1;
     }
 
     return tem_maiuscula && tem_minuscula && tem_digito;
 }
-// ETAPA 2: CIFRAS DE SEGURANÇA
 
-   // 4. Cifra de Cesar
+// 4. Cifra de Cesar (Trata deslocamentos positivos e negativos)
 void cifrar_cesar(char texto[], int deslocamento) {
+    deslocamento = deslocamento % 26;
     for (int i = 0; texto[i] != '\0'; i++) {
-        if (isalpha(texto[i])) {
-            char base = isupper(texto[i]) ? 'A' : 'a';
-            texto[i] = (texto[i] - base + deslocamento) % 26 + base;
+        if (isalpha((unsigned char)texto[i])) {
+            char base = isupper((unsigned char)texto[i]) ? 'A' : 'a';
+            texto[i] = (texto[i] - base + deslocamento + 26) % 26 + base;
         }
     }
 }
+
 // 5. Cifra XOR (Simetrica)
 void cifrar_xor(char texto[], char chave) {
     for (int i = 0; texto[i] != '\0'; i++) {
         texto[i] = texto[i] ^ chave;
-        printf("Status: SENHA FRACA!\n");
     }
 }
-    
- int main() {
+
+int main(void) {
     char dado[TAM_BUFFER];
     char senha[TAM_BUFFER];
     char texto[TAM_BUFFER];
     int deslocamento;
     char chave_xor = 'K';
+    int opcao;
 
-    // --- TESTES DA ETAPA 1 ---
-    printf("Digite um CPF/Cartao: ");
-    ler_string(dado, TAM_BUFFER);
-    mascarar_dados(dado);
-    printf("Dado mascarado: %s\n\n", dado);
+    do {
+        printf("\n================ MENU DE SEGURANCA ================\n");
+        printf("1. Mascarar Dado Sensivel (CPF/Cartao)\n");
+        printf("2. Validar Complexidade de Senha\n");
+        printf("3. Cifrar Texto (Cifra de Cesar)\n");
+        printf("4. Cifrar/Decifrar Texto (Cifra XOR)\n");
+        printf("0. Sair\n");
+        printf("===================================================\n");
+        printf("Escolha uma opcao: ");
 
-    printf("Digite uma senha para validar: ");
-    ler_string(senha, TAM_BUFFER);
-    if (validar_senha(senha)) {
-        printf("Status: SENHA FORTE!\n\n");
-    } else {
-        printf("Status: SENHA FRACA!\n\n");
-    }
+        if (scanf("%d", &opcao) != 1) {
+            limpar_buffer();
+            printf("Opcao invalida! Tente novamente.\n");
+            continue;
+        }
+        limpar_buffer(); // Limpa o '\n' residual
 
-    // --- TESTES DA ETAPA 2 ---
-    // Cifra de Cesar
-    printf("Digite um texto para cifrar (Cesar): ");
-    ler_string(texto, TAM_BUFFER);
-    printf("Digite o deslocamento: ");
-    scanf("%d", &deslocamento);
-    getchar(); // Limpa o '\n' pendente do scanf na memoria
+        switch (opcao) {
+            case 1:
+                printf("\nDigite o dado sensivel (CPF/Cartao): ");
+                ler_string(dado, TAM_BUFFER);
+                mascarar_dados(dado);
+                printf("Dado mascarado: %s\n", dado);
+                break;
 
-    cifrar_cesar(texto, deslocamento);
-    printf("Texto Cifrado (Cesar): %s\n\n", texto);
+            case 2:
+                printf("\nDigite a senha para validar: ");
+                ler_string(senha, TAM_BUFFER);
+                if (validar_senha(senha)) {
+                    printf("Status: SENHA FORTE!\n");
+                } else {
+                    printf("Status: SENHA FRACA!\n");
+                }
+                break;
 
-    // Cifra XOR
-    printf("Digite um texto para cifrar (XOR): ");
-    ler_string(texto, TAM_BUFFER);
+            case 3:
+                printf("\nDigite o texto para cifrar (Cesar): ");
+                ler_string(texto, TAM_BUFFER);
+                printf("Digite o deslocamento: ");
+                if (scanf("%d", &deslocamento) == 1) {
+                    limpar_buffer();
+                    cifrar_cesar(texto, deslocamento);
+                    printf("Resultado: %s\n", texto);
+                } else {
+                    limpar_buffer();
+                    printf("Deslocamento invalido.\n");
+                }
+                break;
 
-    cifrar_xor(texto, chave_xor);
-    printf("Texto Cifrado (XOR): %s\n", texto);
+            case 4:
+                printf("\nDigite o texto para aplicar a Cifra XOR: ");
+                ler_string(texto, TAM_BUFFER);
 
-    cifrar_xor(texto, chave_xor); // Aplica novamente para decifrar
-    printf("Texto Decifrado (XOR): %s\n", texto);
+                cifrar_xor(texto, chave_xor);
+                printf("Texto Cifrado: %s\n", texto);
+
+                cifrar_xor(texto, chave_xor);
+                printf("Texto Decifrado: %s\n", texto);
+                break;
+
+            case 0:
+                printf("\nEncerrando o programa...\n");
+                break;
+
+            default:
+                printf("\nOpcao invalida! Tente novamente.\n");
+                break;
+        }
+
+    } while (opcao != 0);
 
     return 0;
 }
