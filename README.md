@@ -2,8 +2,10 @@
 Sistema de Cifragem, Sanitização e Logs de Segurança em C - AV1 CÉSAR School
 
 ## Integrantes do Grupo
-* Luiz Carlos
-* Vinicius Brito
+Luiz — Implementação do módulo de higienização de buffer, mascaramento de dados e estruturação do controle de versão.
+
+Vinicius — Implementação do módulo de validação de senhas, lógica matemática da Cifra de César e integração do menu interativo no main.
+
 # 🛡️ SafeConsole - Aplicação em C para Segurança e Criptografia
 
 O **SafeConsole** é um programa em C focado em práticas de **programação defensiva**, **sanitização de entradas**, **proteção de dados sensíveis** e **criptografia clássica e simétrica**. 
