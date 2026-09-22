@@ -14,16 +14,10 @@ O projeto foi desenvolvido como requisito acadêmico, dividindo-se em módulos f
 
 ---
 
-## 📋 Sumário
-- [Funcionalidades](#-funcionalidades)
-- [Estrutura do Código e Detalhamento Técnico](#-estrutura-do-código-e-detalhamento-técnico)
-- [Como Compilar e Executar](#-como-compilar-e-executar)
-- [Conceitos de Segurança Aplicados](#-conceitos-de-segurança-aplicados)
-- [Integrantes e Contribuições](#-integrantes-e-contribuições)
 
 ---
 
-## 🚀 Funcionalidades
+##  Funcionalidades
 
 1. **Higienização e Sanitização de Entrada:** Leitura segura de strings via terminal, impedindo estouro de buffer (*buffer overflow*) e eliminando a quebra de linha (`\n`).
 2. **Mascaramento de Dados Sensíveis:** Ocultação de dados privados (como CPF ou número de cartão), mantendo apenas os últimos 4 dígitos visíveis.
@@ -33,7 +27,7 @@ O projeto foi desenvolvido como requisito acadêmico, dividindo-se em módulos f
 
 ---
 
-## 🔍 Estrutura do Código e Detalhamento Técnico
+##  Estrutura do Código e Detalhamento Técnico
 
 ### 1. Leitura Segura e Sanitização (`ler_string`)
 * **Assinatura:** `void ler_string(char buffer[], int tamanho)`
@@ -69,7 +63,7 @@ O projeto foi desenvolvido como requisito acadêmico, dividindo-se em módulos f
 
 ---
 
-## 🛠️ Como Compilar e Executar
+##  Como Compilar e Executar
 
 ### Pré-requisitos
 * Compilador C (como **GCC** ou **Clang**) instalado.
