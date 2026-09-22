@@ -14,6 +14,11 @@ void ler_string(char buffer[], int tamanho) {
         }
     }
 }
+// Funcao auxiliar para limpar o buffer do stdin apos o scanf
+void limpar_buffer(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
 // 2. Mascaramento de dados sensiveis
 void mascarar_dados(char dado[]) {
