@@ -1,75 +1,90 @@
-# safe-console-c
-Sistema de Cifragem, Sanitização e Logs de Segurança em C - AV1 CÉSAR School
+#  SafeConsole - Aplicação em C para Segurança, Criptografia e Auditoria
 
-## Integrantes do Grupo
-Luiz — Implementação do módulo de higienização de buffer, mascaramento de dados e estruturação do controle de versão.
+O **SafeConsole** é um sistema em C focado em **programação defensiva**, **sanitização de entradas**, **proteção de dados sensíveis**, **criptografia simétrica e clássica** e **rastreabilidade via auditoria de logs**.
 
-Vinicius — Implementação do módulo de validação de senhas, lógica matemática da Cifra de César e integração do menu interativo no main.
-
-# 🛡️ SafeConsole - Aplicação em C para Segurança e Criptografia
-
-O **SafeConsole** é um programa em C focado em práticas de **programação defensiva**, **sanitização de entradas**, **proteção de dados sensíveis** e **criptografia clássica e simétrica**. 
-
-O projeto foi desenvolvido como requisito acadêmico, dividindo-se em módulos funcionais acessíveis por um menu interativo e construído com tratamento rigoroso de ponteiros e memória.
+O projeto foi desenvolvido como requisito acadêmico, estruturado com um menu interativo completo, gestão rigorosa de buffer e prevenção de *undefined behaviors*.
 
 ---
 
+## 📋 Sumário
+- [Funcionalidades Principais](#-funcionalidades-principais)
+- [Estrutura do Código e Detalhamento Técnico](#-estrutura-do-código-e-detalhamento-técnico)
+- [Boas Práticas e Programação Defensiva](#-boas-práticas-e-programação-defensiva)
+- [Como Compilar e Executar](#-como-compilar-e-executar)
+- [Integrantes e Divisão de Contribuições](#-integrantes-e-divisão-de-contribuições)
 
 ---
 
-##  Funcionalidades
+##  Funcionalidades Principais
 
-1. **Higienização e Sanitização de Entrada:** Leitura segura de strings via terminal, impedindo estouro de buffer (*buffer overflow*) e eliminando a quebra de linha (`\n`).
-2. **Mascaramento de Dados Sensíveis:** Ocultação de dados privados (como CPF ou número de cartão), mantendo apenas os últimos 4 dígitos visíveis.
-3. **Validação de Complexidade de Senhas:** Análise rigorosa de senhas para verificar a presença de letras maiúsculas, minúsculas e números.
-4. **Cifra de César:** Algoritmo de substituição alfabética com suporte a deslocamentos positivos e negativos e rotação modular.
-5. **Cifra XOR:** Criptografia simétrica baseada no operador de nível de bit *OU Exclusivo*, permitindo cifrar e decifrar com a mesma chave.
+* **Etapa 1 — Sanitização, Mascaramento e Senhas:**
+  * Leitura segura de dados para evitar *buffer overflow*.
+  * Sanitização de entrada removendo o caractere de quebra de linha (`\n`).
+  * Mascaramento *in-place* de dados sensíveis (ex: CPF e cartões), preservando apenas os 4 últimos dígitos.
+  * Validação de complexidade de senhas (tamanho mínimo, maiúsculas, minúsculas e números).
+
+* **Etapa 2 — Cifras de Segurança e Exibição Hexadecimal:**
+  * **Cifra de César:** Deslocamento alfabético modular com suporte a valores positivos e negativos.
+  * **Cifra XOR:** Criptografia simétrica bitwise acompanhada de exibição em formato **Hexadecimal** (`%02X`) para tratamento seguro de caracteres não imprimíveis.
+
+* **Etapa 3 — Matriz de Logs em Memória e Auditoria:**
+  * Registrador de eventos na memória dinâmica/estática através de matriz bidimensional.
+  * Relatório completo de auditoria para inspeção de operações realizadas.
+  * Mecanismo de busca por termos específicos no histórico de logs.
+
+* **Funcionalidade Extra — Gerador de Senhas Fortes:**
+  * Geração aleatória de senhas com *seed* temporal (`time.h`), embaralhamento via algoritmo de *Fisher-Yates* e validação automática.
 
 ---
 
-##  Estrutura do Código e Detalhamento Técnico
+## Estrutura do Código e Detalhamento Técnico
 
 ### 1. Leitura Segura e Sanitização (`ler_string`)
-* **Assinatura:** `void ler_string(char buffer[], int tamanho)`
-* **Descrição:** Substitui a leitura insegura via `scanf("%s")` pelo uso do `fgets`.
-* **Funcionamento:** O `fgets` limita a leitura ao tamanho máximo alocado no vetor. A função utiliza `strlen` para localizar o final do texto lido e substitui o caractere de quebra de linha `\n` (deixado ao pressionar Enter) pelo caractere nulo `\0`, sanitizando a string.
+* **Descrição:** Garante a leitura controlada de strings.
+* **Técnica:** Utiliza `fgets` limitado ao tamanho do buffer. Trata a string calculando o comprimento via `strlen` e substitui o `\n` pelo caractere nulo `\0`, impedindo quebras de linha indesejadas no fluxo do programa.
 
 ### 2. Limpeza de Buffer Auxiliar (`limpar_buffer`)
-* **Assinatura:** `void limpar_buffer(void)`
-* **Descrição:** Função utilitária para consumo de resíduos no fluxo de entrada padrão (`stdin`).
-* **Funcionamento:** Executa um laço `while` até consumir o caractere `\n` ou `EOF`. Isso previne que chamadas anteriores do `scanf` deixem o caractere Enter no buffer, o que faria as leituras seguintes de texto serem ignoradas.
+* **Descrição:** Previne a contaminação de entradas após leituras numéricas.
+* **Técnica:** Utiliza um laço `while ((c = getchar()) != '\n' && c != EOF)` para consumir eventuais resíduos deixados no `stdin` por chamadas da função `scanf`.
 
-### 3. Mascaramento de Dados (`mascarar_dados`)
-* **Assinatura:** `void mascarar_dados(char dado[])`
-* **Descrição:** Anonimiza dados na própria memória (in-place).
-* **Funcionamento:** Calcula o comprimento total da string. Se o comprimento for maior que 4, calcula a posição `limite = tamanho - 4` e substitui todos os caracteres do índice `0` até `limite - 1` por asteriscos (`*`), preservando a identificação dos últimos 4 dígitos.
+### 3. Mascaramento de Dados Sensíveis (`mascarar_dados`)
+* **Descrição:** Oculta informações privadas diretamente na memória do vetor.
+* **Técnica:** Altera os caracteres do índice `0` até `tamanho - 4` para o caractere `'*'`, garantindo a conformidade visual de privacidade de dados.
 
-### 4. Validação de Senha (`validar_senha`)
-* **Assinatura:** `int validar_senha(char senha[])`
-* **Descrição:** Avalia os critérios de força da senha informada.
-* **Funcionamento:** Exige tamanho mínimo de 8 caracteres. Percorre a string avaliando caractere por caractere através das funções `<ctype.h>` (`isupper`, `islower`, `isdigit`). É aplicado o *casting* `(unsigned char)` para garantir portabilidade com caracteres estendidos. Retorna `1` caso atinja todos os critérios ou `0` caso contrário.
+### 4. Validador de Senhas (`validar_senha`)
+* **Descrição:** Analisa os requisitos mínimos de força da senha.
+* **Técnica:** Verifica comprimento mínimo de 8 caracteres e aplica casting `(unsigned char)` junto às funções `<ctype.h>` (`isupper`, `islower`, `isdigit`) para assegurar tratamento correto de caracteres estendidos.
 
 ### 5. Cifra de César (`cifrar_cesar`)
-* **Assinatura:** `void cifrar_cesar(char texto[], int deslocamento)`
-* **Descrição:** Aplica criptografia por substituição.
-* **Funcionamento:** Utiliza a fórmula matemática de aritmética modular:
-  $$\text{NovoCaractere} = ((\text{caractere} - \text{base} + \text{deslocamento}) \pmod{26} + 26) \pmod{26} + \text{base}$$
-  O termo `+ 26` garante o funcionamento correto mesmo quando o usuário insere um deslocamento negativo. Mantém intactos símbolos, números e o padrão de maiúsculas/minúsculas.
+* **Descrição:** Algoritmo de substituição alfabética circular.
+* **Técnica:** Aplica a fórmula matemática:  
+  `texto[i] = (texto[i] - base + deslocamento + 26) % 26 + base`  
+  A adição do valor `26` permite operar corretamente com deslocamentos negativos mantendo a rotação no alfabeto ASCII.
 
-### 6. Cifra XOR (`cifrar_xor`)
-* **Assinatura:** `void cifrar_xor(char texto[], char chave)`
-* **Descrição:** Criptografia simétrica baseada em operações bitwise.
-* **Funcionamento:** Percorre a string aplicando o operador XOR (`^`) entre a representação binária de cada caractere e a chave de criptografia. Por ser uma operação involutiva, aplicar a função uma segunda vez com a mesma chave recupera o texto original.
+### 6. Cifra XOR com Saída Hexadecimal (`cifrar_xor` / `exibir_hexadecimal`)
+* **Descrição:** Operação binária de substituição simétrica (*OU Exclusivo*).
+* **Técnica:** Altera os bits através do operador `^`. Por gerar caracteres não imprimíveis, a função auxiliar `exibir_hexadecimal` imprime os valores formatados em bytes Hex (`%02X`).
+
+### 7. Sistema de Auditoria e Logs (`registrar_log`, `exibir_relatorio_auditoria`, `buscar_logs`)
+* **Descrição:** Módulo de rastreabilidade do sistema.
+* **Técnica:** Armazena os eventos do sistema na matriz `logs[MAX_LOGS][TAM_LOG]`. Permite consulta sequencial do relatório e busca de padrões utilizando a função `strstr`.
 
 ---
 
-##  Como Compilar e Executar
+## 🛡️ Boas Práticas e Programação Defensiva
+
+1. **Prevenção contra Buffer Overflow:** Substituição total de funções inseguras como `gets()` e `scanf("%s")` por `fgets()` parametrizado.
+2. **Validação de Retorno em `scanf`:** O menu e as opções checam se a leitura numérica foi bem-sucedida (`if (scanf(...) != 1)`), evitando loops infinitos em caso de digitação de letras.
+3. **Robustez de Tipos:** Uso de `unsigned char` na checagem de caracteres para evitar *undefined behavior* em arquiteturas específicas.
+4. **Criptografia e Caracteres Invisíveis:** Exibição em Hexadecimal na Cifra XOR para evitar corrupção visual do terminal ao manipular bytes nulos ou de controle.
+
+---
+
+## 🛠️ Como Compilar e Executar
 
 ### Pré-requisitos
-* Compilador C (como **GCC** ou **Clang**) instalado.
+* Compilador C (**GCC**, **Clang** ou similar) instalado.
 
-### Passos
-1. Clone o repositório:
-   ```bash
-   git clone [https://github.com/luizzzxt/safe-console-c.git](https://github.com/luizzzxt/safe-console-c.git)
-   cd safe-console-c
+### Comando para Compilação
+```bash
+gcc -Wall -Wextra -std=c99 main.c -o safe_console
