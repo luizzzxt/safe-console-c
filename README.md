@@ -1,5 +1,11 @@
 #  SafeConsole - Aplicação em C para Segurança, Criptografia e Auditoria
 
+## 👥 Integrantes e Divisão de Contribuições
+
+* **Luiz:** Responsável pela implementação da leitura segura de dados (`ler_string`), sanitização de buffers e mascaramento de dados sensíveis. Desenvolveu a estrutura da matriz de auditoria de logs em memória (Etapa 3), organizou a documentação do projeto e gerenciou o repositório no GitHub.
+
+* **Vinicius:** Responsável pela lógica do validador de complexidade de senhas e pelo desenvolvimento das cifras criptográficas (César e XOR com exibição Hexadecimal). Construiu a estrutura do menu interativo com tratamento de erros de digitação e implementou o gerador de senhas fortes com o algoritmo de *Fisher-Yates*.
+
 O **SafeConsole** é um sistema em C focado em **programação defensiva**, **sanitização de entradas**, **proteção de dados sensíveis**, **criptografia simétrica e clássica** e **rastreabilidade via auditoria de logs**.
 
 O projeto foi desenvolvido como requisito acadêmico, estruturado com um menu interativo completo, gestão rigorosa de buffer e prevenção de *undefined behaviors*.
